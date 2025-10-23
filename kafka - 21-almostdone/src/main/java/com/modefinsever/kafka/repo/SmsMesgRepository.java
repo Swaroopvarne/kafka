@@ -7,4 +7,6 @@ import com.modefinsever.kafka.entity.SmsMesg;
 
 @Repository
 public interface SmsMesgRepository extends JpaRepository<SmsMesg, Long> {
+	
+	
 }
