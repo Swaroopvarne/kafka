@@ -1,0 +1,38 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: admin-server
+
+# Admin will register itself into Eureka and discover other clients
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
+  instance:
+    prefer-ip-address: true
+
+  boot:
+    admin:
+      discovery:
+        enabled: true
+      notify:
+        mail:
+          enabled: true
+          to: nswaroop789@gmail.com       # your alert email
+          from: swaroopnvarne@gmail.com   # same as monitor-service sender
+
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: swaroopnvarne@gmail.com
+    password: fjxs ytrj rsni bmmi        # Gmail app password (❌ recommend move to env variable)
+    properties:
+      mail.smtp.auth: true
+      mail.smtp.starttls.enable: true
+
+  security:
+    user:
+      name: admin
+      password: admin123
