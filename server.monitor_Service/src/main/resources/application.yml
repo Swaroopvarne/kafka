@@ -1,0 +1,86 @@
+server:
+  port: 8092
+
+spring:
+  application:
+    name: monitor-service
+
+  kafka:
+    bootstrap-servers: localhost:9092
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+    consumer:
+      group-id: notification-group
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      properties:
+        spring.json.trusted.packages: "*"
+
+  boot:
+    admin:
+      client:
+        url: http://localhost:8080   # Spring Boot Admin server
+        instance:
+          prefer-ip: true
+         # name: monitor-service
+
+# ===============================
+# Kafka Custom App Topics
+# ===============================
+app:
+  kafka:
+    topic:
+      email: email-events
+      sms: sms-events
+      dlt: email-events.dlt
+
+# ===============================
+# Monitoring Configuration
+# ===============================
+monitor:
+  apps:
+    - host: google.com
+      port: 443
+      name: Google
+    - host: localhost
+      port: 8080
+      name: admin
+    - host: localhost
+      port: 8761
+      name: eureka
+
+  alert-email: nswaroop789@gmail.com
+  cron: "*/30 * * * * *"   # every 30 seconds
+
+  mail:
+    from: swaroopnvarne@gmail.com
+    password: fjxs ytrj rsni bmmi   # Gmail App Password
+
+# ===============================
+# Eureka Client Config
+# ===============================
+eureka:
+  client:
+    register-with-eureka: true
+    fetch-registry: true
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
+  instance:
+    prefer-ip-address: true
+    hostname: localhost
+
+# ===============================
+# Actuator Config
+# ===============================
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "health,info,metrics,scheduledtasks,loggers,threaddump,env"
+  endpoint:
+    health:
+      show-details: always
+  metrics:
+    tags:
+      application: ${spring.application.name}
