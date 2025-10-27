@@ -1,8 +1,6 @@
 package com.modefinsever.kafka.controller;
 
-import static com.modefinsever.kafka.utils.UrlsConstants.NOTIFICATON_URL;
-import static com.modefinsever.kafka.utils.UrlsConstants.SEND_EMAIL;
-import static com.modefinsever.kafka.utils.UrlsConstants.SEND_SMS;
+import static com.modefinsever.kafka.utils.UrlsConstants.*;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
