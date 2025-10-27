@@ -1,9 +1,10 @@
 package com.modefinsever.kafka.service;
 
-
 import java.time.LocalDateTime;
 import java.util.HashMap;
+import java.util.concurrent.CompletableFuture;
 
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,6 +25,7 @@ public class NotificationService {
         this.smsMesgRepository = smsMesgRepository;
     }
 
+    @Async
     @Transactional
     public void processSms(NotificationComReq  messageContent) {
         try {
@@ -35,6 +37,10 @@ public class NotificationService {
             map.put("MobileNumber", "9876543210"); // You can pass dynamically
             map.put("Message", messageContent);
 //            sender.sendSMS(map);
+
+		  // Call SMS API (mocked here)
+          Thread.sleep(500); // simulate delay
+          log.info("✅ SMS sent successfully to {}", map.get("MobileNumber"));
 
          // Save to DB
             SmsMesg sms = SmsMesg.builder()
@@ -55,34 +61,31 @@ public class NotificationService {
     }
 
     @Transactional
-    public void processEmail(NotificationComReq  emailContent) {
-        try {
-            log.info("📧 Sending Email: {}", emailContent);
+    public CompletableFuture<Void> processEmail(NotificationComReq  emailContent) {
+		return CompletableFuture.runAsync(() -> {
+			try {
+				log.info("📧 Sending Email: {}", emailContent);
 
-            // Send actual Email using your class
-            SendMail mailer = new SendMail();
-            HashMap<String, Object> map = new HashMap<>();
-            map.put("ToAddress", emailContent.getToAddress());
-            map.put("Subject", emailContent.getSubject());
-            map.put("MailMessage", emailContent.getMesg());
-            mailer.sendMail(map);
+				// Send actual Email using your class
+				SendMail mailer = new SendMail();
+				HashMap<String, Object> map = new HashMap<>();
+				map.put("ToAddress", emailContent.getToAddress());
+				map.put("Subject", emailContent.getSubject());
+				map.put("MailMessage", emailContent.getMesg());
+				mailer.sendMail(map);
 
-         // Save to DB
-            SmsMesg emailRecord = SmsMesg.builder()
-                    .toAddress((String) map.get("ToAddress"))
-                    .message((String) map.get("MailMessage"))
-                    .status(1)
-                    .createdAt(LocalDateTime.now())
-                    .modifiedAt(LocalDateTime.now())
-                    .build();
+				// Save to DB
+				SmsMesg emailRecord = SmsMesg.builder().toAddress((String) map.get("ToAddress"))
+						.message((String) map.get("MailMessage")).status(1).createdAt(LocalDateTime.now())
+						.modifiedAt(LocalDateTime.now()).build();
 
-            smsMesgRepository.save(emailRecord);
+				smsMesgRepository.save(emailRecord);
 
-            log.info("✅ Email sent and logged successfully");
+				log.info("✅ Email sent and logged successfully");
 
-        } catch (Exception e) {
-            log.error("❌ Failed to send email: {}", e.getMessage(), e);
-        }
-    }
-}
+			} catch (Exception e) {
+				log.error("❌ Failed to send email: {}", e.getMessage(), e);
+			}
+		});
+}}
 
