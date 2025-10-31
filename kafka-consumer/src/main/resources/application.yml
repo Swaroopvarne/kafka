@@ -1,0 +1,63 @@
+server:
+  port: 8091
+
+spring:
+  application:
+    name: kafka-consumer
+
+  datasource:
+    url: jdbc:mysql://localhost:3306/mfmbs?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+    username: root
+    password: root
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQL8Dialect
+
+  kafka:
+    bootstrap-servers: localhost:9092
+
+    consumer:
+      group-id: email-group
+      auto-offset-reset: earliest
+      enable-auto-commit: true
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.ErrorHandlingDeserializer
+      properties:
+        spring.deserializer.key.delegate.class: org.apache.kafka.common.serialization.StringDeserializer
+        spring.deserializer.value.delegate.class: org.springframework.kafka.support.serializer.JsonDeserializer
+        spring.json.trusted.packages: "*"
+        spring.json.value.default.type: java.util.HashMap
+      session-timeout-ms: 15000
+      max-poll-interval-ms: 300000
+
+    listener:
+      concurrency: 1
+
+  jackson:
+    time-zone: UTC
+
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: swaroopnvarne@gmail.com
+    password: fjxs ytrj rsni bmmi
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+        debug: false
+
+app:
+  topics:
+    sms: sms-events
+    sms-dlt: sms-events.dlt
+    email: email-events
+    email-dlt: email-events.dlt
