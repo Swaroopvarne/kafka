@@ -1,0 +1,94 @@
+server:
+  port: 8090
+
+spring:
+  application:
+    name: kafka-producer
+
+  kafka:
+    bootstrap-servers: localhost:9092
+
+    # Producer config
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+      retries: 10
+      acks: all
+      batch-size: 16384
+      linger-ms: 5
+      buffer-memory: 33554432
+      max-in-flight-requests-per-connection: 5
+      enable-idempotence: true
+      delivery-timeout-ms: 180000
+      request-timeout-ms: 60000
+      max-block-ms: 60000
+
+#    # Consumer config
+#    consumer:
+#      group-id: email-group          # Use email-group for email consumer to avoid conflicts
+#      auto-offset-reset: earliest
+#      enable-auto-commit: true       # Commit offsets automatically to avoid rebalances
+#      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+#      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+#      properties:
+#        spring.json.trusted.packages: "*"
+#      session-timeout-ms: 15000      # Kafka waits 15s before considering consumer dead
+#      max-poll-interval-ms: 300000   # Max time between polls
+#    listener:
+#      concurrency: 1                 # Single thread for email consumer to avoid rebalance loops
+#
+#  jackson:
+#    time-zone: UTC
+#
+#  mail:
+#    host: smtp.gmail.com
+#    port: 587
+#    username: swaroopnvarne@gmail.com
+#    password: fjxs ytrj rsni bmmi
+#    properties:
+#      mail:
+#        smtp:
+#          auth: true
+#          starttls:
+#            enable: true
+#        debug: false
+
+app:
+  topics:
+    sms: sms-events
+    sms-dlt: sms-events.dlt
+    email: email-events
+    email-dlt: email-events.dlt
+
+# ===============================
+# Optional Monitoring Config
+# ===============================
+#management:
+#  endpoints:
+#    web:
+#      exposure:
+#        include: "*"
+#  endpoint:
+#    health:
+#      show-details: always
+#  metrics:
+#    tags:
+#      application: ${spring.application.name}
+#  info:
+#    git:
+#      mode: full
+#  prometheus:
+#    enabled: true
+
+# ===============================
+# Optional Eureka Config
+# ===============================
+#eureka:
+#  client:
+#    register-with-eureka: true
+#    fetch-registry: true
+#    service-url:
+#      defaultZone: http://localhost:8761/eureka/
+#  instance:
+#    prefer-ip-address: true
+#    hostname: localhost
